@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<title>Локальная поисковая система InfoTor</title>
+<link rel="stylesheet" type="text/css" href="infotor.css" />
+</head>
+<body>
+<div class="layer1"><h1>Локальная поисковая система InfoTor</h1></div>
+<div class="layer3">
+
+	<table style="width: 100%; height:80%">
+		<tr>
+			<td style="width:30%">&nbsp;</td>
+			<td style="vertical-align:middle;">
+				<li class="but"><a href="http://localhost:9000/cgi-bin/main.py">Поиск</a></li>
+				<li class="but"><a href="http://localhost:9000/cgi-bin/load.py">Обновление</a></li>
+
+			</td>
+			<td style="width:30%">&nbsp;</td>
+		</tr>
+	</table>
+<br />
+</div>	
+
+<div class="layer4" >
+<table class="subtable" cellpadding="0" cellspacing="0">
+<tr><td width="30%"></td>
+<td width="40%" style="text-align:center"><p>- 2017 -</p></td>
+<td align="right"><p>&copy; Y3401</p></td>
+</tr></table></div>
+
+<div class="mess" id="mess">
+	<p>Эта страница получена из файла.</p>
+	<p>Для корректного отображения и работоспособности программы вначале выполните запуск локального HTTP-сервера командой <b><i>python start.py</i></b></p><hr>
+	<p style="text-align:right"><input name="Button1" type="button" value="Закрыть" onmousedown="document.open('','_parent');close();" /></p>
+</div>
+<script>
+<!-- hide
+if ((document.location.href).substring(0,4)=="file") {
+		//alert("Эта страница открыта как файл.\nДля корректного отображения и работоспособности программы \nвначале выполните запуск локального HTTP-сервера командой python start.py");
+		var elS = document.getElementById('mess').style;
+		elS.display='block';
+	}
+// -->
+</script>
+	
+</body></html>
