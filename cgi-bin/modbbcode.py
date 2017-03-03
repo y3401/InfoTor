@@ -222,13 +222,13 @@ def bbcode2html(intext):
     intext=intext.replace('''href="http://rutracker.org/forum/viewtopic.php?t''','''href="info.py?tid''')
     intext=intext.replace('[hr]','<hr>')
     intext=intext.replace('[/align]','</span>')
-    intext=intext.replace('[/quote]','</div></div>')
+    intext=intext.replace('[/quote]','</div>')
     intext=intext.replace('[/color]','</span>')
     intext=intext.replace('[align=center]','<span class="post-align" style="text-align: center">')
     intext=intext.replace('[/size]','</span>')
     
     #intext=intext.replace('</SIZE>','</span>')
-    #intext=intext.replace('</FONT>','</span>')
+    intext=intext.replace('[/font]','</span>')
     #intext=intext.replace('</COLOR>','</span>')
     
     

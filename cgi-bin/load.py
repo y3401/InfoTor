@@ -149,7 +149,7 @@ print('''</table></div></div></td></tr>
 <div class="wait" id="wt" style="display:none"><div class="wait-content"><table style="width:100%; height:100%;">
 <tr><td style="width:100%; height:100%; vertical-align:middle"><p><span id="watch">000</span></p>
 </td></tr></table>
-<div id="comment">Загрузка и обработка файла может занять продолжительное время. <br />
+<div id="comment">Загрузка и обработка файла может занять продолжительное время. До 2.5-3 часов. <br />
 Не закрывайте это окно, дождитесь завершения!</div>
 </div></div>
 </body></html>''')

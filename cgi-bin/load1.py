@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import cgi,os
@@ -7,6 +7,7 @@ import sys
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 import myutils as mU
 from loadxml import load_xml
+import time
 
 form = cgi.FieldStorage()
 file_tor=''     # флаг создания основной базы
@@ -16,6 +17,10 @@ category=[]     # загружаемые категории
 vac=''          # флаг сжатия базы после обновления
 n=0             # номер строки в ответе
 rep_back=()     # возвращаемое значение всего и загружено
+time_begin = 0  # начало процесса
+time_end = 0    # конец процесса
+
+time_begin=time.time()
 
 if "opt1" in form.keys(): file_tor=form.getfirst("opt1")
 if "opt2" in form.keys(): file_con=form.getfirst("opt2")
@@ -27,8 +32,8 @@ if "vac" in form.keys(): vac=form.getfirst("vac")
 
 print('content­type: text/html\n')
 print('''<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head><meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<html><head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 <title>Обновление базы</title>
 <link rel="stylesheet" type="text/css" href="../infotor.css" />
 </head><body><div class="layer1"><h1>Обновление завершено</h1></div>
@@ -92,7 +97,22 @@ if vac=='on':
         mU.vacu('DB/content.db3')
     n+=1
     print('<p>%s. Выполнено сжатие баз</p>' % n)
-print('<p>Обновление выполнено. Теперь для экономии места на компьютере можно удалить файл <b>"backup.*.xml"</b> из каталога <b>/UPDATE</b> </p>')
+
+time_end=time.time()
+tsec=time_end-time_begin
+stsec=(str(tsec)).split('.')
+tsec=int(stsec[0])
+seconds=0
+minutes=0
+hours=0
+seconds=tsec % 60
+minutes=(tsec//60) % 60
+hours=(tsec//3600) % 24
+
+n+=1
+print('<p>{}. Общее затраченное время - <b>{}:{}:{}</b></p>'.format(n, str(hours),('0'+str(minutes))[-2:],('0'+str(seconds))[-2:]))
+
+print('<p style="color:brown">Обновление выполнено. Теперь для экономии места на диске можно удалить файл <b>"backup.*.xml"</b> из каталога <b>/UPDATE</b> </p>')
 print('''<p style="text-align:right"><input type="button" value="Готово" onclick="window.open('main.py','_parent');" name="ready" style="width: 95px" />''')
 print('''</p></td></tr></table></div></div>
 <div class="layer4" >
