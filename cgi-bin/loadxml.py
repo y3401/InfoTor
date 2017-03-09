@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # модуль парсинга дампа БД "RuTracker.org" и загрузки в БД sqlite InfoTor
 
