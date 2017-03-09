@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
 import cgi
@@ -23,7 +23,7 @@ def calc(bsize=0):
         return ('{} '+razmer[0]).format(int(bsize))
 
 def sel_content(id_tor):
-    DB=sqlite3.connect('DB/content.db3')
+    DB=sqlite3.connect('./DB/content.db3')
     cur=DB.cursor()
     cur.execute('SELECT content FROM cont WHERE id_tor=?;', (id_tor,))
     r=cur.fetchone()
@@ -41,7 +41,7 @@ tid=0
 
 if "tid" in form.keys(): tid=int(form.getfirst("tid"))
 
-DB=sqlite3.connect('DB/torrents.db3')
+DB=sqlite3.connect('./DB/torrents.db3')
 cur=DB.cursor()
 cur.execute('''SELECT name_cat, podr_name, hash_info, title, size_b, date_reg
     FROM (torrent AS t inner join podr AS p on t.podr_id=p.podr_number) inner join razd AS r on t.razd_id=r.kod_cat

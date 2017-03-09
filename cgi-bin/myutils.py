@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
 import glob
 import sqlite3
+import os
 
 List=[]
 CTG=[]
@@ -79,7 +80,8 @@ def create_db():    #Создание базы и заполнение табл�
     DB.commit()
     cur.close()
     DB.close()
-
+    os.chmod('DB/torrents.db3', 0o766)
+    
 def create_db_content(): # Создание доп. БД для хранения описаний раздач
     DB=sqlite3.connect('DB/content.db3')
     cur=DB.cursor()
@@ -92,7 +94,8 @@ def create_db_content(): # Создание доп. БД для хранения
     """)
     cur.close()
     DB.close()
-
+    os.chmod('DB/content.db3', 0o766)
+    
 def get_vers():
     DB=sqlite3.connect('DB/torrents.db3')
     cur=DB.cursor()
@@ -113,19 +116,25 @@ def ins_forums(lists):
 
 def clear_content():
     DB=sqlite3.connect('DB/content.db3')
+    DB.isolation_level=None
     DB.execute('DELETE FROM cont')
     DB.commit()
     DB.execute('vacuum')
+    DB.commit()
     DB.close()
+    return True
 
 def clear_torrents():
     DB=sqlite3.connect('DB/torrents.db3')
+    DB.isolation_level=None
     DB.execute('DELETE FROM torrent')
     DB.commit()
     DB.execute('UPDATE vers set vers="00000000"')
     DB.commit()
     DB.execute('vacuum')
+    DB.commit()
     DB.close()
+    return True
 
 def up_cat(razd=0,key=1):
     if razd!=0:
@@ -145,10 +154,13 @@ def up_period(period):
     cur.execute('UPDATE vers set vers="{}"'.format(period))
     DB.commit()
     DB.close()
+    return True
         
 def vacu(file=''):
     if file!='':
         DB=sqlite3.connect(file)
+        DB.isolation_level=None
         DB.execute('vacuum')
         DB.close()
+        return True
 

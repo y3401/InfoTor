@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
 import cgi,os
@@ -13,7 +13,7 @@ exist_con=check_file('./DB/content.db3')
 
 print('content­type: text/html\n')
 print('''<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head><meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 <title>Обновление базы</title>
 <link rel="stylesheet" type="text/css" href="../infotor.css" />
@@ -24,17 +24,17 @@ print('''<!DOCTYPE html>
         elStyle.display = (elStyle.display == 'none') ? '' : 'none';}
   function do_all(source) {
   for(i=0;i<24;i++)  {
-	document.getElementById('razd'+(i+1)).checked=source.checked;}}
+document.getElementById('razd'+(i+1)).checked=source.checked;}}
   function do_one(source) {
-	if(!source.checked)	{
-	document.getElementById('main').checked=false;}
-	else {set_checked=true;
-	    for(i=0;i<24;i++) {
-		if(!document.getElementById('razd'+(i+1)).checked) {
-		    set_checked=false;
-		break;}}
-		if(set_checked)	{
-		document.getElementById('main').checked=true;}}}
+if(!source.checked)	{
+document.getElementById('main').checked=false;}
+else {set_checked=true;
+    for(i=0;i<24;i++) {
+if(!document.getElementById('razd'+(i+1)).checked) {
+    set_checked=false;
+break;}}
+if(set_checked)	{
+document.getElementById('main').checked=true;}}}
 function tcount() {
     showBlock('wt');
     var start=0;
@@ -42,21 +42,21 @@ function tcount() {
         setInterval(function(){
             start++;
             var seconds = Math.floor( (start/1) % 60 );
-  			var minutes = Math.floor( (start/1/60) % 60 );
-  			var hours = Math.floor( (start/(1*60*60)) % 24 );
-  			seconds = (seconds < 10) ? "0"+seconds : seconds;
-			minutes = (minutes < 10) ? "0"+minutes : minutes;
-			hours = (hours < 10) ? "0"+hours : hours;
-			counter_time=hours+':'+minutes+':'+seconds;
+var minutes = Math.floor( (start/1/60) % 60 );
+var hours = Math.floor( (start/(1*60*60)) % 24 );
+seconds = (seconds < 10) ? "0"+seconds : seconds;
+minutes = (minutes < 10) ? "0"+minutes : minutes;
+hours = (hours < 10) ? "0"+hours : hours;
+counter_time=hours+':'+minutes+':'+seconds;
 
             document.getElementById("watch").innerHTML = counter_time;
         }, 1000);}
 function validator(){
-	if (document.optload.backup.value=="")
-		{alert('Нет файла бэкапа, с которого будет проводится загрузка!');
-		document.optload.backup.focus();
-		return false}
-	else {tcount();	return true};}
+if (document.optload.backup.value=="")
+{alert('Нет файла бэкапа, с которого будет проводится загрузка!');
+document.optload.backup.focus();
+return false}
+else {tcount();	return true};}
 </script>
 <div class="layer1"><h1>Обновление базы InfoTor</h1></div>
 <div class="layer3">
@@ -89,8 +89,9 @@ print('''<tr class="tr80"><td style="width:10%; text-align:center;"><p>3.</p></t
 <td><p align="right"><span title="Выберите файл обновления. Если в этом поле пусто, то поместите в каталог INFOTOR/UPDATE файл и обновите страницу">
 <select name="backup" value="" style="width: 200px">''')
 
-if check_file('./UPDATE/backup.*.xml')==True:
-    for f in sorted(os.listdir('./UPDATE'),reverse=True):
+if check_file('UPDATE/backup.*.xml')==True:
+    print('<h2>yes</h2>')
+    for f in sorted(os.listdir('UPDATE'),reverse=True):
         if f[:8] == 'backup.2':
             print('<option value="{}">{}</option>\n'.format(f,f))
     

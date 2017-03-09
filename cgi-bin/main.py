@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
 import cgi
@@ -80,7 +80,7 @@ def bolder(text=''):
 
 html_head='''<!DOCTYPE html>
 <html><head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equid="content-type" content="text/html; charset=utf-8" http-equiv="Content-Type" />
 <title>Локальная поисковая система InfoTor</title>
 <link rel="stylesheet" type="text/css" href="../infotor.css" />
 </head><body>'''
@@ -102,7 +102,7 @@ html_form1='''<div class="layer2">
 html_form2='\n'
 
 if exist_tor==True:
-    DB=sqlite3.connect('DB/torrents.db3')
+    DB=sqlite3.connect('./DB/torrents.db3')
     cur=DB.cursor()
     cur.execute('SELECT kod_cat,name_cat FROM razd WHERE load_cat=1 ORDER BY kod_cat')
     r=cur.fetchall()
@@ -140,7 +140,7 @@ print(html_form2)
 print(html_form3)
 
 if exist_tor==True:
-    DB=sqlite3.connect('DB/torrents.db3')
+    DB=sqlite3.connect('./DB/torrents.db3')
     cur=DB.cursor()
     if QT!='' or podr!='0':
         vv='0'
@@ -207,29 +207,29 @@ if exist_tor==True:
     cur.close()
     DB.close()
 
-print(html_footer.format(sepp(numrec)))
-if vv=='0':
-    if numrec>0:
-        smax=(numrec//100)+1
-        L = range(0,smax)
-        pcur=int(pozlist)+1
-        pmin = pcur - 10
-        pmax = pcur + 9
-        if pmin < 2: pmin = 2
-        if pmax > smax: pmax = smax
-        outlist(1)
-        if pcur>11: print(' ... ')
-        for j in L[pmin:pmax]: outlist(j)
-        if pcur < smax-9: print(' ... ')
-        if smax!=1: outlist(smax)
-elif vv=='1':
-    pass
-else:
-    print('База данных по состоянию на <b>%s.%s.%s</b>' % (vers[-2:],vers[4:6],vers[:4]))
+    print(html_footer.format(sepp(numrec)))
+    if vv=='0':
+        if numrec>0:
+            smax=(numrec//100)+1
+            L = range(0,smax)
+            pcur=int(pozlist)+1
+            pmin = pcur - 10
+            pmax = pcur + 9
+            if pmin < 2: pmin = 2
+            if pmax > smax: pmax = smax
+            outlist(1)
+            if pcur>11: print(' ... ')
+            for j in L[pmin:pmax]: outlist(j)
+            if pcur < smax-9: print(' ... ')
+            if smax!=1: outlist(smax)
+    elif vv=='1':
+        pass
+    else:
+        print('База данных по состоянию на <b>%s.%s.%s</b>' % (vers[-2:],vers[4:6],vers[:4]))
 
-print('''</p></td><td style="text-align:right; width=30%"><p>&copy;Y3401</p></td></tr></table></div>''')
+    print('''</p></td><td style="text-align:right; width=30%"><p>&copy;Y3401</p></td></tr></table></div>''')
 
-if exist_tor==False:
+elif exist_tor==False:
     print('''<center><table>
     <tr width="800px" vertical-align="middle" ><td width="20%"></td><td height="300px" align="left">
     <p>Для успешной работы в программе <b>InfoTor</b> необходимо загрузить данные через страницу <a href="load.py">"Обновление"</a>.</p>
@@ -241,4 +241,6 @@ if exist_tor==False:
     <hr>
     <p style="text-align:right"><input name="Button1" type="button" value="На Главную" onclick="window.open('../index.html','_parent');" /></p>
     </td><td width="20%"></td></tr></table></center>''')
+    print(exist_tor)
+    print(html_footer.format(sepp(numrec)))
 print(html_end)
