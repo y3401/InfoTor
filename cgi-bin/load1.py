@@ -1,7 +1,7 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import cgi
+import cgi,os
 import codecs
 import sys
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
@@ -19,8 +19,7 @@ n=0             # номер строки в ответе
 rep_back=()     # возвращаемое значение всего и загружено
 time_begin = 0  # начало процесса
 time_end = 0    # конец процесса
-ex_tor=False
-ex_con=False
+
 time_begin=time.time()
 
 if "opt1" in form.keys(): file_tor=form.getfirst("opt1")
@@ -28,6 +27,8 @@ if "opt2" in form.keys(): file_con=form.getfirst("opt2")
 if "razd" in form.keys(): category=form.getlist("razd")
 if "backup" in form.keys(): backup=form.getfirst("backup")
 if "vac" in form.keys(): vac=form.getfirst("vac")
+
+
 
 print('content­type: text/html\n')
 print('''<!DOCTYPE html>
@@ -51,24 +52,18 @@ if file_tor=='tor':
     n+=1
     print('<p>%s. Справочники категорий и форумов заполнены</p>' % n)
     
-
 if file_con=='con':
     mU.create_db_content()
     n+=1
     print('<p>%s. База описаний контента content.db3 создана</p>' % n)
 
     # очистить таблицы
-ex_tor=mU.check_file('DB/torrents.db3')
-ex_con=mU.check_file('DB/content.db3')
-
-if ex_tor==True:
+if mU.check_file('DB/torrents.db3')==True:
     mU.clear_torrents()
-    n+=1
-    print('<p>%s. Выполнена полная очистка таблиц основной базы</p>' % n)
-if ex_con==True:
+if mU.check_file('DB/content.db3')==True:
     mU.clear_content()
-    n+=1
-    print('<p>%s. Выполнена полная очистка базы описаний</p>' % n)
+n+=1
+print('<p>%s. Выполнена полная очистка таблиц</p>' % n)
 
 n+=1
 print('<p>%s. Загружаются следующие категории:</p><ul style="margin-left:40px; background-color:#F0F0F0">' % n)
@@ -86,7 +81,7 @@ n+=1
 print('<p>{}. Загружается обновление от <b>{}.{}.{}</b></p><br />'.format(n,period[-2:],period[4:6],period[:4]))
 mU.up_period(period)
 
-if ex_con==True:
+if mU.check_file('DB/content.db3')==True:
     rep_back=load_xml('UPDATE/'+backup,'DB/torrents.db3','DB/content.db3')
 else:
     rep_back=load_xml('UPDATE/'+backup,'DB/torrents.db3')
@@ -96,9 +91,9 @@ print('<p>{}. Обработано: <b>{}</b> записей.</p>'.format(n, rep
 n+=1
 print('<p>{}. Записано: &nbsp;&nbsp;&nbsp;<b>{}</b> записей</p>'.format(n, rep_back[1]))
 if vac=='on':
-    if ex_tor==True:
+    if mU.check_file('DB/torrents.db3')==True:
         mU.vacu('DB/torrents.db3')
-    if ex_con==True:
+    if mU.check_file('DB/content.db3')==True:
         mU.vacu('DB/content.db3')
     n+=1
     print('<p>%s. Выполнено сжатие баз</p>' % n)

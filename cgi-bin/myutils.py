@@ -1,9 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import glob
 import sqlite3
-import os
 
 List=[]
 CTG=[]
@@ -42,60 +41,53 @@ def create_db():    #Создание базы и заполнение табл�
     DB=sqlite3.connect('DB/torrents.db3')
     cur=DB.cursor()
     cur.executescript("""
-    CREATE TABLE IF NOT EXISTS razd
-    (id_razd INTEGER PRIMARY KEY AUTOINCREMENT,
-    kod_cat INTEGER UNIQUE,
-    name_cat TEXT NOT NULL,
-    load_cat INTEGER);
+    CREATE TABLE IF NOT EXISTS "category"
+    ("code_category" smallint NOT NULL PRIMARY KEY,
+    "name_category" varchar(50) NOT NULL,
+    "load_category" bool NOT NULL);
 
-    CREATE TABLE IF NOT EXISTS podr
-    (id_podr INTEGER PRIMARY KEY AUTOINCREMENT,
-    kod_cat INTEGER DEFAULT 0,
-    podr_number INTEGER UNIQUE,
-    podr_name TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS "forum"
+    ("code_forum" smallint NOT NULL PRIMARY KEY,
+    "name_forum" varchar(80) NOT NULL,
+    "category_id" smallint NOT NULL REFERENCES "category" ("code_category"));
 
-    CREATE TABLE IF NOT EXISTS torrent
-    (id_torrent INTEGER PRIMARY KEY AUTOINCREMENT,
-    razd_id INTEGER,
-    podr_id INTEGER,
-    file_id INTEGER UNIQUE,
-    hash_info TEXT,
-    title TEXT,
-    size_b INTEGER,
-    date_reg NUMERIC);
+    CREATE INDEX IF NOT EXISTS "forum_category_id_48a15a32" ON "forum" ("category_id");
 
-    DROP INDEX IF EXISTS idx_cat_forum;
-    
-    CREATE INDEX IF NOT EXISTS idx_cat_forum
-    ON torrent
-    (razd_id,podr_id);
-    
-    CREATE TABLE IF NOT EXISTS vers
-    (vers TEXT);
+    CREATE TABLE IF NOT EXISTS "torrent"
+    ("file_id" integer NOT NULL PRIMARY KEY,
+    "hash_info" varchar(40) NOT NULL,
+    "title" varchar(255) NOT NULL,
+    "size_b" integer NOT NULL,
+    "date_reg" varchar(20) NOT NULL,
+    "forum_id" smallint NOT NULL REFERENCES "forum" ("code_forum"));
+
+    CREATE INDEX IF NOT EXISTS "torrent_forum_id_b67937c0" ON "torrent" ("forum_id");
+
+    CREATE TABLE IF NOT EXISTS "vers"
+    ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "vers" varchar(8) NOT NULL);
 
     INSERT INTO vers(vers) VALUES ('00000000');
     """)
-    cur.executescript('DELETE FROM razd; DELETE FROM podr; DELETE FROM torrent;')
-    cur.executemany('INSERT INTO razd(kod_cat,name_cat,load_cat) VALUES (?, ?, 1);', CTG)
+    cur.executescript('DELETE FROM category; DELETE FROM forum; DELETE FROM torrent;')
+    cur.executemany('INSERT INTO category(code_category,name_category,load_category) VALUES (?, ?, 1);', CTG)
     DB.commit()
     cur.close()
     DB.close()
-    os.chmod('DB/torrents.db3', 0o766)
-    
+
 def create_db_content(): # Создание доп. БД для хранения описаний раздач
     DB=sqlite3.connect('DB/content.db3')
     cur=DB.cursor()
     cur.executescript("""
-    CREATE TABLE IF NOT EXISTS cont
-    (id_cont INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_tor INTEGER UNIQUE,
-    content NONE NOT NULL);
-    DELETE FROM cont;
+    CREATE TABLE "contents"
+    ("tid" integer NOT NULL PRIMARY KEY,
+    "cont" text NOT NULL);
+
+    DELETE FROM contents;
     """)
     cur.close()
     DB.close()
-    os.chmod('DB/content.db3', 0o766)
-    
+
 def get_vers():
     DB=sqlite3.connect('DB/torrents.db3')
     cur=DB.cursor()
@@ -109,32 +101,26 @@ def ins_forums(lists):
     DB=sqlite3.connect('DB/torrents.db3')
     for LLL in lists:
         try:
-            DB.execute('INSERT INTO podr(podr_number,podr_name,kod_cat) VALUES (?, ?, ?);', LLL)
+            DB.execute('INSERT INTO forum(code_forum,name_forum,category_id) VALUES (?, ?, ?);', LLL)
         except:
             pass
     DB.commit()
 
 def clear_content():
     DB=sqlite3.connect('DB/content.db3')
-    DB.isolation_level=None
-    DB.execute('DELETE FROM cont')
+    DB.execute('DELETE FROM contents')
     DB.commit()
     DB.execute('vacuum')
-    DB.commit()
     DB.close()
-    return True
 
 def clear_torrents():
     DB=sqlite3.connect('DB/torrents.db3')
-    DB.isolation_level=None
     DB.execute('DELETE FROM torrent')
     DB.commit()
     DB.execute('UPDATE vers set vers="00000000"')
     DB.commit()
     DB.execute('vacuum')
-    DB.commit()
     DB.close()
-    return True
 
 def up_cat(razd=0,key=1):
     if razd!=0:
@@ -144,7 +130,7 @@ def up_cat(razd=0,key=1):
         #    cur.execute('ATTACH "DB/content.db3" as con')
         #    cur.execute('DELETE FROM cont WHERE id_tor IN (SELECT file_id FROM torrent WHERE razd_id='+str(razd)+');')
         #cur.execute('DELETE FROM torrent WHERE razd_id=?;', (str(razd),))
-        cur.execute('UPDATE razd SET load_cat=? WHERE kod_cat=?;', (key,str(razd)))
+        cur.execute('UPDATE category SET load_category=? WHERE code_category=?;', (key,str(razd)))
         DB.commit()
         DB.close()
 
@@ -154,13 +140,10 @@ def up_period(period):
     cur.execute('UPDATE vers set vers="{}"'.format(period))
     DB.commit()
     DB.close()
-    return True
         
 def vacu(file=''):
     if file!='':
         DB=sqlite3.connect(file)
-        DB.isolation_level=None
         DB.execute('vacuum')
         DB.close()
-        return True
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # модуль парсинга дампа БД "RuTracker.org" и загрузки в БД sqlite InfoTor
 
@@ -86,25 +86,25 @@ class TorHandler(xml.sax.ContentHandler):
 
 def check_forum(kod_podr,name_podr): # проверка наличия форума в базе, добавление или апдейт
     c=DB.cursor()
-    c.execute('SELECT * FROM podr WHERE podr_number=?', (kod_podr,))
+    c.execute('SELECT * FROM forum WHERE code_forum=?', (kod_podr,))
     row=c.fetchall()
     if len(row) == 0:
-        c.execute('INSERT INTO podr(podr_number,podr_name,kod_cat) VALUES (?,?,0)', (kod_podr,name_podr))
+        c.execute('INSERT INTO forum(code_forum,name_forum,category_id) VALUES (?,?,0)', (kod_podr,name_podr))
     else:
-        c.execute('UPDATE podr SET podr_name=? WHERE podr_number=?', (name_podr, kod_podr))
-    c.execute('SELECT kod_cat FROM podr WHERE podr_number=?',(kod_podr,))
+        c.execute('UPDATE forum SET name_forum=? WHERE code_forum=?', (name_podr, kod_podr))
+    c.execute('SELECT category_id FROM forum WHERE code_forum=?',(kod_podr,))
     result=c.fetchone()
     c.close()
     return result[0]
 
 def write_tor(id_razd,id_podr,id_file,hash_info,title,size_b,date_reg):
     global num2,num3
-    DB.execute('INSERT INTO torrent(razd_id,podr_id,file_id,hash_info,title,size_b,date_reg) VALUES (?,?,?,?,?,?,?);', (id_razd,id_podr,id_file,hash_info,title,size_b,date_reg))
+    DB.execute('INSERT INTO torrent(forum_id,file_id,hash_info,title,size_b,date_reg) VALUES (?,?,?,?,?,?);', (id_podr,id_file,hash_info,title,size_b,date_reg))
     num2 += 1
             
 def write_content(id_tor, cont):
     C = zlib.compress(cont.encode())
-    DB1.execute('INSERT INTO cont(id_tor,content) SELECT ?,?', (id_tor, C))
+    DB1.execute('INSERT INTO contents(tid,cont) SELECT ?,?', (id_tor, C))
 
 def load_xml(backup, file_tor, file_con=''):
     global DB,DB1,f_c,razdel
@@ -115,7 +115,7 @@ def load_xml(backup, file_tor, file_con=''):
         DB1=sqlite3.connect(file_con)
         f_c=True
     cur=DB.cursor()
-    cur.execute('SELECT kod_cat FROM razd WHERE load_cat=1')
+    cur.execute('SELECT code_category FROM category WHERE load_category=1')
     r=cur.fetchall()
     for rr in r:
         razdel.append(rr[0])

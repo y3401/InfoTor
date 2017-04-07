@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import cgi
@@ -29,13 +29,13 @@ if "pozlist" in form.keys(): pozlist=form["pozlist"].value
 if "podr" in form.keys(): podr=form["podr"].value
 
 def squery(fraze='',razdel='0'):
-    sfq=' FROM (torrent AS t inner join podr AS p on t.podr_id=p.podr_number) inner join razd AS r on t.razd_id=r.kod_cat WHERE size_b>0 '
+    sfq=' FROM (torrent AS t inner join forum AS p on t.forum_id=p.code_forum) inner join category AS r on p.category_id=r.code_category WHERE size_b>0 '
     sfq+=splitter(fraze)
     if razdel!='00':
-        sfq+=' AND t.razd_id=%s ' % (str(int(razdel)),)
+        sfq+=' AND p.category_id=%s ' % (str(int(razdel)),)
     if podr!='0':
-        sfq+=' AND p.podr_number=%s ' % (str(int(podr)),)
-    sfq+=' ORDER BY r.kod_cat asc, p.podr_name asc, t.file_id desc '
+        sfq+=' AND p.code_forum=%s ' % (str(int(podr)),)
+    sfq+=' ORDER BY p.category_id asc, p.name_forum asc, t.file_id desc '
     return sfq
 
 def splitter(text=''):
@@ -80,7 +80,7 @@ def bolder(text=''):
 
 html_head='''<!DOCTYPE html>
 <html><head>
-<meta http-equid="content-type" content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
 <title>Локальная поисковая система InfoTor</title>
 <link rel="stylesheet" type="text/css" href="../infotor.css" />
 </head><body>'''
@@ -102,9 +102,9 @@ html_form1='''<div class="layer2">
 html_form2='\n'
 
 if exist_tor==True:
-    DB=sqlite3.connect('./DB/torrents.db3')
+    DB=sqlite3.connect('DB/torrents.db3')
     cur=DB.cursor()
-    cur.execute('SELECT kod_cat,name_cat FROM razd WHERE load_cat=1 ORDER BY kod_cat')
+    cur.execute('SELECT code_category,name_category FROM category WHERE load_category=1 ORDER BY code_category')
     r=cur.fetchall()
     for rr in r:
         razdel=('0'+str(rr[0]))[-2:]
@@ -140,7 +140,7 @@ print(html_form2)
 print(html_form3)
 
 if exist_tor==True:
-    DB=sqlite3.connect('./DB/torrents.db3')
+    DB=sqlite3.connect('DB/torrents.db3')
     cur=DB.cursor()
     if QT!='' or podr!='0':
         vv='0'
@@ -151,7 +151,7 @@ if exist_tor==True:
         numrec=cur.fetchone()[0] #общее количество записей по запросу
         if numrec>0:
             offset=(int(pozlist)-1)*100
-            cur.execute('SELECT name_cat, podr_name, file_id, hash_info, title, size_b, date_reg, podr_number' + sfq + ' LIMIT 100 OFFSET {};'.format(offset))
+            cur.execute('SELECT name_category, name_forum, file_id, hash_info, title, size_b, date_reg, code_forum' + sfq + ' LIMIT 100 OFFSET {};'.format(offset))
             r=cur.fetchall()
             nom=0+offset # номер в возвращаемом списке
             for srep in r:
@@ -171,10 +171,10 @@ if exist_tor==True:
 
     elif razd!='00':
         vv='1'
-        cur.execute('SELECT COUNT(podr_number) FROM podr where kod_cat=%s' % int(razd)) #общее количество форумов по категории
+        cur.execute('SELECT COUNT(code_forum) FROM forum where category_id=%s' % int(razd)) #общее количество форумов по категории
         numrec=cur.fetchone()[0]
     
-        sfq='SELECT podr_number,podr_name FROM podr WHERE kod_cat=%s ORDER BY podr_name' % int(razd)
+        sfq='SELECT code_forum,name_forum FROM forum WHERE category_id=%s ORDER BY name_forum' % int(razd)
         cur.execute(sfq)
         r=cur.fetchall()
         print('<ul>')
@@ -207,29 +207,29 @@ if exist_tor==True:
     cur.close()
     DB.close()
 
-    print(html_footer.format(sepp(numrec)))
-    if vv=='0':
-        if numrec>0:
-            smax=(numrec//100)+1
-            L = range(0,smax)
-            pcur=int(pozlist)+1
-            pmin = pcur - 10
-            pmax = pcur + 9
-            if pmin < 2: pmin = 2
-            if pmax > smax: pmax = smax
-            outlist(1)
-            if pcur>11: print(' ... ')
-            for j in L[pmin:pmax]: outlist(j)
-            if pcur < smax-9: print(' ... ')
-            if smax!=1: outlist(smax)
-    elif vv=='1':
-        pass
-    else:
-        print('База данных по состоянию на <b>%s.%s.%s</b>' % (vers[-2:],vers[4:6],vers[:4]))
+print(html_footer.format(sepp(numrec)))
+if vv=='0':
+    if numrec>0:
+        smax=(numrec//100)+1
+        L = range(0,smax)
+        pcur=int(pozlist)+1
+        pmin = pcur - 5
+        pmax = pcur + 4
+        if pmin < 2: pmin = 2
+        if pmax > smax: pmax = smax
+        outlist(1)
+        if pcur>6: print(' ... ')
+        for j in L[pmin:pmax]: outlist(j)
+        if pcur < smax-4: print(' ... ')
+        if smax!=1: outlist(smax)
+elif vv=='1':
+    pass
+else:
+    print('База данных по состоянию на <b>%s.%s.%s</b>' % (vers[-2:],vers[4:6],vers[:4]))
 
-    print('''</p></td><td style="text-align:right; width=30%"><p>&copy;Y3401</p></td></tr></table></div>''')
+print('''</p></td><td style="text-align:right; width=30%"><p>&copy;Y3401</p></td></tr></table></div>''')
 
-elif exist_tor==False:
+if exist_tor==False:
     print('''<center><table>
     <tr width="800px" vertical-align="middle" ><td width="20%"></td><td height="300px" align="left">
     <p>Для успешной работы в программе <b>InfoTor</b> необходимо загрузить данные через страницу <a href="load.py">"Обновление"</a>.</p>
@@ -241,6 +241,4 @@ elif exist_tor==False:
     <hr>
     <p style="text-align:right"><input name="Button1" type="button" value="На Главную" onclick="window.open('../index.html','_parent');" /></p>
     </td><td width="20%"></td></tr></table></center>''')
-    print(exist_tor)
-    print(html_footer.format(sepp(numrec)))
 print(html_end)
