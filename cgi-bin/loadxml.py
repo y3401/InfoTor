@@ -26,25 +26,25 @@ class TorHandler(xml.sax.ContentHandler):
    # Call when an element starts
     def startElement(self, tag, attributes):
         self.CurrentData = tag
-        global tid, reg_date, b_size, forum_id
+        global tid, reg_date, b_size, forum_id, magnet
         if tag == 'torrent':
             tid = attributes['id']
             reg_date = attributes['registred_at']
             b_size = attributes['size']
         elif tag == 'forum':
             forum_id = attributes['id']
-            
-                   
+        elif tag == 'torr':
+            magnet=attributes['hash']    
+
    # Call when an elements ends 
     def endElement(self, tag):
-        global magnet, forum, title, k, contents, num1
+        global forum, title, k, contents, num1
         if self.CurrentData == 'url':
             pass
-        elif self.CurrentData == 'magnet':
-            magnet = self.magnet
-            magnet = magnet.replace('magnet:?xt=urn:btih:','')
-            magnet = magnet.replace('&tr=1','')
-            self.magnet = ''
+        elif self.CurrentData == 'torr':
+            #magnet = self.magnet
+            #self.magnet = ''
+            pass
         elif self.CurrentData == 'forum':
             forum = self.forum
             forum=forum.replace('"',"'")
@@ -77,8 +77,8 @@ class TorHandler(xml.sax.ContentHandler):
             self.title += content
         elif self.CurrentData == 'url':
             self.url = content
-        elif self.CurrentData == 'magnet':
-            self.magnet += content
+        elif self.CurrentData == 'torr':
+            self.magnet = content
         elif self.CurrentData == 'forum':
             self.forum += content
         elif self.CurrentData == 'content':
